@@ -5,8 +5,31 @@ defmodule ServerWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :auth do
+    plug Server.Users.Pipeline
+  end
+
+  pipeline :ensure_auth do
+    plug Server.Users.EnsureAuthPipeline
+  end
+
   scope "/api", ServerWeb do
-    pipe_through :api
+    pipe_through [
+      :api,
+      :auth
+    ]
+
+    post "/register", SessionController, :create
+    post "/login", SessionController, :login
+  end
+
+  scope "/api", ServerWeb do
+    pipe_through [:api, :ensure_auth]
+
+    get "/protected", AuthController, :protected
+    post "/logout", SessionController, :logout
+    resources "/users", UserController, except: [:new, :edit]
+    # Todo - change password
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

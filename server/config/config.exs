@@ -31,6 +31,11 @@ config :server, ServerWeb.Endpoint,
 # at the `config/runtime.exs`.
 config :server, Server.Mailer, adapter: Swoosh.Adapters.Local
 
+# Configures Guardian
+config :server, Server.Guardian,
+  issuer: "server",
+  secret_key: System.get_env("GUARDIAN_SECRET")
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
