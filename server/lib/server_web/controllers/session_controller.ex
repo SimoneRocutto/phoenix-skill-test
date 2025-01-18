@@ -8,13 +8,24 @@ defmodule ServerWeb.SessionController do
          {:ok, token, _full_claims} <- Guardian.encode_and_sign(user) do
       conn
       |> put_status(:created)
-      |> json(%{account: "success!", token: token})
+      |> json(%{user: "success!", token: token})
     end
   end
 
   def login(conn, %{"user" => %{"username" => username, "password" => password}}) do
     Users.authenticate_user(username, password)
     |> login_reply(conn)
+  end
+
+  # If router passes through the pipeline, then the token is valid
+  def verify_token(conn, %{}) do
+    json(conn, %{message: "valid_token"})
+  end
+
+  def refresh_token(conn, %{}) do
+    token = Guardian.Plug.current_token(conn)
+    {:ok, _old_stuff, {new_token, _new_claims}} = Server.Guardian.refresh(token)
+    json(conn, %{new_token: new_token})
   end
 
   # def logout(conn, _) do

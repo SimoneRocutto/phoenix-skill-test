@@ -34,7 +34,8 @@ config :server, Server.Mailer, adapter: Swoosh.Adapters.Local
 # Configures Guardian
 config :server, Server.Guardian,
   issuer: "server",
-  secret_key: System.get_env("GUARDIAN_SECRET")
+  secret_key: System.get_env("GUARDIAN_SECRET"),
+  ttl: {10, :minute}
 
 # Configures Elixir's Logger
 config :logger, :console,

@@ -5,12 +5,25 @@ defmodule ServerWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :verify do
+    plug Server.Users.VerifyPipeline
+  end
+
   pipeline :auth do
     plug Server.Users.Pipeline
   end
 
   pipeline :ensure_auth do
     plug Server.Users.EnsureAuthPipeline
+  end
+
+  scope "/api", ServerWeb do
+    pipe_through [
+      :api,
+      :verify
+    ]
+
+    post "/verify", SessionController, :verify_token
   end
 
   scope "/api", ServerWeb do
@@ -29,6 +42,8 @@ defmodule ServerWeb.Router do
     get "/protected", AuthController, :protected
     post "/logout", SessionController, :logout
     resources "/users", UserController, except: [:new, :edit]
+    post "/refresh", SessionController, :refresh_token
+
     # Todo - change password
   end
 
