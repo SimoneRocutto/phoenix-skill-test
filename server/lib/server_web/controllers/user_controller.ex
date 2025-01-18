@@ -1,8 +1,7 @@
 defmodule ServerWeb.UserController do
   use ServerWeb, :controller
 
-  alias Server.Users
-  alias Server.Users.User
+  alias Server.{Users, Users.User, Guardian}
 
   action_fallback ServerWeb.FallbackController
 
@@ -39,5 +38,18 @@ defmodule ServerWeb.UserController do
     with {:ok, %User{}} <- Users.delete_user(user) do
       send_resp(conn, :no_content, "")
     end
+  end
+
+  def get_reset_token(conn, _) do
+    user = Guardian.Plug.current_resource(conn)
+    {:ok, token, _full_claims} = Guardian.encode_and_sign(user, %{}, token_type: "reset")
+
+    json(conn, %{token: token})
+  end
+
+  def reset_password(conn, %{"password" => password}) do
+    user = Guardian.Plug.current_resource(conn)
+    Users.update_user(user, %{password: password})
+    json(conn, %{message: "password change successful!"})
   end
 end
