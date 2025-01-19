@@ -28,6 +28,7 @@ defmodule ServerWeb.Router do
 
     resources "/clients", ClientController, except: [:new, :edit]
     resources "/categories", CategoryController, except: [:new, :edit]
+    resources "/products", ProductController, except: [:new, :edit]
   end
 
   scope "/api", ServerWeb do
