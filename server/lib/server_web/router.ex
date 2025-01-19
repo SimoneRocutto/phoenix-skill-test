@@ -23,6 +23,14 @@ defmodule ServerWeb.Router do
 
   scope "/api", ServerWeb do
     pipe_through [
+      :api
+    ]
+
+    resources "/clients", ClientController, except: [:new, :edit]
+  end
+
+  scope "/api", ServerWeb do
+    pipe_through [
       :api,
       :verify
     ]
