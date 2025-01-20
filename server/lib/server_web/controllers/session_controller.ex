@@ -3,6 +3,8 @@ defmodule ServerWeb.SessionController do
 
   alias Server.{Users, Users.User, Guardian}
 
+  action_fallback ServerWeb.FallbackController
+
   def create(conn, %{"user" => user_params}) do
     with {:ok, %User{} = user} <- Users.create_user(user_params),
          {:ok, token, _full_claims} <- Guardian.encode_and_sign(user) do

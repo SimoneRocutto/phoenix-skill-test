@@ -17,6 +17,8 @@ defmodule Server.Clients.Client do
   def changeset(client, attrs) do
     client
     |> cast(attrs, [:first_name, :last_name, :email, :phone_number, :location, :hobby])
-    |> validate_required([:first_name, :last_name, :email, :phone_number, :location, :hobby])
+    |> validate_required([:first_name, :last_name, :email])
+    |> validate_format(:email, ~r/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
+    |> unique_constraint([:email])
   end
 end

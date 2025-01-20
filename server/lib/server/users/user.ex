@@ -15,6 +15,7 @@ defmodule Server.Users.User do
     user
     |> cast(attrs, [:username, :password])
     |> validate_required([:username, :password])
+    |> unique_constraint([:username])
     |> put_password_hash()
   end
 
