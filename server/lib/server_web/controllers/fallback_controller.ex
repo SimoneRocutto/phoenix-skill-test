@@ -21,4 +21,11 @@ defmodule ServerWeb.FallbackController do
     |> put_view(html: ServerWeb.ErrorHTML, json: ServerWeb.ErrorJSON)
     |> render(:"404")
   end
+
+  def call(conn, {:error, :non_existing_field, field}) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> put_view(json: ServerWeb.DbErrorJSON)
+    |> render(:non_existing_field, %{field: field})
+  end
 end

@@ -4,21 +4,29 @@ defmodule Server.Clients do
   """
 
   import Ecto.Query, warn: false
-  alias Server.Repo
+  alias Server.{Repo, DataUtils}
 
   alias Server.Clients.Client
 
   @doc """
-  Returns the list of clients.
+  Returns the list of clients with pagination data.
 
   ## Examples
 
       iex> list_clients()
-      [%Client{}, ...]
+      %{data: [%Client{}, ...], pagination: %{total_count: 100, limit: 10, offset: 0}}
 
   """
-  def list_clients do
-    Repo.all(Client)
+  @spec list_clients(%{limit: integer(), offset: integer(), sort: any(), filter: any()}) :: %{
+          data: [...],
+          pagination: %{
+            total_count: integer(),
+            limit: integer(),
+            offset: integer()
+          }
+        }
+  def list_clients(formatted_params) do
+    DataUtils.list_query(Client, formatted_params)
   end
 
   @doc """

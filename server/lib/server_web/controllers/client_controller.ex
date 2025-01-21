@@ -1,13 +1,19 @@
 defmodule ServerWeb.ClientController do
   use ServerWeb, :controller
 
-  alias Server.{Clients, Clients.Client}
+  alias Server.{Clients, Clients.Client, DataUtils}
 
   action_fallback ServerWeb.FallbackController
 
-  def index(conn, _params) do
-    clients = Clients.list_clients()
-    render(conn, :index, clients: clients)
+  def index(conn, params) do
+    case DataUtils.format_index_query_params(Client, params) do
+      {:error, error_type, error_message} ->
+        {:error, error_type, error_message}
+
+      {:ok, formatted_params} ->
+        result = Clients.list_clients(formatted_params)
+        render(conn, :index, result)
+    end
   end
 
   def create(conn, %{"client" => client_params}) do

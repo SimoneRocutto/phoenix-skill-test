@@ -7,17 +7,24 @@ defmodule Server.ClientsFixtures do
   @doc """
   Generate a client.
   """
-  def client_fixture(attrs \\ %{}) do
+  def client_fixture(attrs \\ %{}, full_override \\ false) do
+    default =
+      if full_override do
+        %{}
+      else
+        %{
+          email: "some@email.com",
+          first_name: "some first_name",
+          hobby: "some hobby",
+          last_name: "some last_name",
+          location: "some location",
+          phone_number: "+391029394832"
+        }
+      end
+
     {:ok, client} =
       attrs
-      |> Enum.into(%{
-        email: "some email",
-        first_name: "some first_name",
-        hobby: "some hobby",
-        last_name: "some last_name",
-        location: "some location",
-        phone_number: "some phone_number"
-      })
+      |> Enum.into(default)
       |> Server.Clients.create_client()
 
     client

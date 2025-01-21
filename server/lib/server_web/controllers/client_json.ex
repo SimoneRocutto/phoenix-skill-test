@@ -1,11 +1,12 @@
 defmodule ServerWeb.ClientJSON do
-  alias Server.Clients.Client
+  alias Server.{Clients.Client, DataUtils}
 
   @doc """
   Renders a list of clients.
   """
-  def index(%{clients: clients}) do
-    %{data: for(client <- clients, do: data(client))}
+  @spec index(%{data: [%Client{}], pagination: map()}) :: %{data: [map()], pagination: map()}
+  def index(raw_data) do
+    DataUtils.format_index_response(raw_data, &data/1)
   end
 
   @doc """
