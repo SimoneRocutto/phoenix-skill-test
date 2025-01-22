@@ -13,7 +13,7 @@ defmodule Server.Clients do
 
   ## Examples
 
-      iex> list_clients()
+      iex> list_clients(%{limit: 10, offset: 0, sort: [asc: :first_name], filter: %{last_name: "b"}})
       %{data: [%Client{}, ...], pagination: %{total_count: 100, limit: 10, offset: 0}}
 
   """

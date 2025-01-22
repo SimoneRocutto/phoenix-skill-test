@@ -3,11 +3,23 @@ defmodule ServerWeb.CategoryControllerTest do
 
   import Server.ProductsFixtures
 
+  alias ServerWeb.CategoryController
   alias Server.Products.Category
 
   @create_attrs %{
     name: "some name"
   }
+  @create_attrs_list [
+    %{
+      name: "manga"
+    },
+    %{
+      name: "figure"
+    },
+    %{
+      name: "wallpaper"
+    }
+  ]
   @update_attrs %{
     name: "some updated name"
   }
@@ -21,6 +33,59 @@ defmodule ServerWeb.CategoryControllerTest do
     test "lists all categories", %{conn: conn} do
       conn = get(conn, ~p"/api/categories")
       assert json_response(conn, 200)["data"] == []
+    end
+  end
+
+  describe "index pagination, sort and filters" do
+    setup [:create_multiple_categories]
+
+    test "pagination works", %{conn: conn} do
+      conn = get(conn, ~p"/api/categories?page[limit]=2&page[offset]=1")
+
+      [
+        %{
+          "name" => "figure"
+        },
+        %{
+          "name" => "wallpaper"
+        }
+      ] =
+        json_response(conn, 200)["data"]
+    end
+
+    test "sorts categories", %{conn: conn} do
+      conn = get(conn, ~p"/api/categories?sort=name")
+
+      [
+        %{
+          "name" => "figure"
+        },
+        %{
+          "name" => "manga"
+        },
+        %{
+          "name" => "wallpaper"
+        }
+      ] =
+        json_response(conn, 200)["data"]
+    end
+
+    test "filters categories", %{conn: conn} do
+      conn = get(conn, ~p"/api/categories?filter[name]=a")
+
+      [
+        %{
+          "name" => "manga"
+        },
+        %{
+          "name" => "wallpaper"
+        }
+      ] =
+        json_response(conn, 200)["data"]
+
+      conn = get(conn, ~p"/api/categories?filter[fjoijea]=a&filter[name]=b")
+
+      json_response(conn, 422)
     end
   end
 
@@ -46,7 +111,10 @@ defmodule ServerWeb.CategoryControllerTest do
   describe "update category" do
     setup [:create_category]
 
-    test "renders category when data is valid", %{conn: conn, category: %Category{id: id} = category} do
+    test "renders category when data is valid", %{
+      conn: conn,
+      category: %Category{id: id} = category
+    } do
       conn = put(conn, ~p"/api/categories/#{category}", category: @update_attrs)
       assert %{"id" => ^id} = json_response(conn, 200)["data"]
 
@@ -81,4 +149,12 @@ defmodule ServerWeb.CategoryControllerTest do
     category = category_fixture()
     %{category: category}
   end
+
+  defp create_multiple_categories(_) do
+    @create_attrs_list
+    |> Enum.map(&category_fixture(&1))
+    |> then(&%{categories: &1})
+  end
+
+  doctest CategoryController
 end

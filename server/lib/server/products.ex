@@ -4,21 +4,29 @@ defmodule Server.Products do
   """
 
   import Ecto.Query, warn: false
-  alias Server.Repo
+  alias Server.{Repo, DataUtils}
 
   alias Server.Products.Category
 
   @doc """
-  Returns the list of categories.
+  Returns the list of categories with pagination data.
 
   ## Examples
 
-      iex> list_categories()
-      [%Category{}, ...]
+      iex> list_categories(%{limit: 10, offset: 0, sort: [asc: :name], filter: %{name: "a"}})
+      %{data: [%Category{}, ...], pagination: %{total_count: 100, limit: 10, offset: 0}}
 
   """
-  def list_categories do
-    Repo.all(Category)
+  @spec list_categories(%{limit: integer(), offset: integer(), sort: any(), filter: any()}) :: %{
+          data: [...],
+          pagination: %{
+            total_count: integer(),
+            limit: integer(),
+            offset: integer()
+          }
+        }
+  def list_categories(formatted_params) do
+    DataUtils.list_query(Category, formatted_params)
   end
 
   @doc """
@@ -105,16 +113,24 @@ defmodule Server.Products do
   alias Server.Products.Product
 
   @doc """
-  Returns the list of products.
+  Returns the list of products with pagination data.
 
   ## Examples
 
-      iex> list_products()
-      [%Product{}, ...]
+      iex> list_products(%{limit: 10, offset: 0, sort: [asc: :name], filter: %{name: "a"}})
+      %{data: [%Product{}, ...], pagination: %{total_count: 100, limit: 10, offset: 0}}
 
   """
-  def list_products do
-    Repo.all(Product)
+  @spec list_products(%{limit: integer(), offset: integer(), sort: any(), filter: any()}) :: %{
+          data: [...],
+          pagination: %{
+            total_count: integer(),
+            limit: integer(),
+            offset: integer()
+          }
+        }
+  def list_products(formatted_params) do
+    DataUtils.list_query(Product, formatted_params)
   end
 
   @doc """

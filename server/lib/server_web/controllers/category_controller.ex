@@ -3,12 +3,19 @@ defmodule ServerWeb.CategoryController do
 
   alias Server.Products
   alias Server.Products.Category
+  alias Server.DataUtils
 
   action_fallback ServerWeb.FallbackController
 
-  def index(conn, _params) do
-    categories = Products.list_categories()
-    render(conn, :index, categories: categories)
+  def index(conn, params) do
+    case DataUtils.format_index_query_params(Category, params) do
+      {:error, error_type, error_message} ->
+        {:error, error_type, error_message}
+
+      {:ok, formatted_params} ->
+        result = Products.list_categories(formatted_params)
+        render(conn, :index, result)
+    end
   end
 
   def create(conn, %{"category" => category_params}) do

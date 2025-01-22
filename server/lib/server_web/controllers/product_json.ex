@@ -1,11 +1,13 @@
 defmodule ServerWeb.ProductJSON do
   alias Server.Products.Product
+  alias Server.DataUtils
 
   @doc """
   Renders a list of products.
   """
-  def index(%{products: products}) do
-    %{data: for(product <- products, do: data(product))}
+  @spec index(%{data: [%Product{}], pagination: map()}) :: %{data: [map()], pagination: map()}
+  def index(raw_data) do
+    DataUtils.format_index_response(raw_data, &data/1)
   end
 
   @doc """
@@ -19,7 +21,8 @@ defmodule ServerWeb.ProductJSON do
     %{
       id: product.id,
       name: product.name,
-      price: product.price
+      price: product.price,
+      category_id: product.category_id
     }
   end
 end

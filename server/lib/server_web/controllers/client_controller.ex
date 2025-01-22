@@ -1,7 +1,9 @@
 defmodule ServerWeb.ClientController do
   use ServerWeb, :controller
 
-  alias Server.{Clients, Clients.Client, DataUtils}
+  alias Server.Clients
+  alias Server.Clients.Client
+  alias Server.DataUtils
 
   action_fallback ServerWeb.FallbackController
 

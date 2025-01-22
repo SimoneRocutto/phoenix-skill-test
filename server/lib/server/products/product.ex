@@ -4,7 +4,7 @@ defmodule Server.Products.Product do
 
   schema "products" do
     field :name, :string
-    field :price, :decimal
+    field :price, :float
     field :category_id, :id
 
     timestamps(type: :utc_datetime)

@@ -1,5 +1,6 @@
 defmodule ServerWeb.ClientJSON do
-  alias Server.{Clients.Client, DataUtils}
+  alias Server.Clients.Client
+  alias Server.DataUtils
 
   @doc """
   Renders a list of clients.

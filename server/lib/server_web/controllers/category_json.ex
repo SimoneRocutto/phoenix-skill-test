@@ -1,11 +1,13 @@
 defmodule ServerWeb.CategoryJSON do
   alias Server.Products.Category
+  alias Server.DataUtils
 
   @doc """
   Renders a list of categories.
   """
-  def index(%{categories: categories}) do
-    %{data: for(category <- categories, do: data(category))}
+  @spec index(%{data: [%Category{}], pagination: map()}) :: %{data: [map()], pagination: map()}
+  def index(raw_data) do
+    DataUtils.format_index_response(raw_data, &data/1)
   end
 
   @doc """

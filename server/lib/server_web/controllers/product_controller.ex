@@ -3,12 +3,19 @@ defmodule ServerWeb.ProductController do
 
   alias Server.Products
   alias Server.Products.Product
+  alias Server.DataUtils
 
   action_fallback ServerWeb.FallbackController
 
-  def index(conn, _params) do
-    products = Products.list_products()
-    render(conn, :index, products: products)
+  def index(conn, params) do
+    case DataUtils.format_index_query_params(Product, params) do
+      {:error, error_type, error_message} ->
+        {:error, error_type, error_message}
+
+      {:ok, formatted_params} ->
+        result = Products.list_products(formatted_params)
+        render(conn, :index, result)
+    end
   end
 
   def create(conn, %{"product" => product_params}) do
