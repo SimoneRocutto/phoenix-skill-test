@@ -12,7 +12,7 @@ defmodule Server.ProductsTest do
 
     test "list_categories/0 returns all categories" do
       category = category_fixture()
-      assert Products.list_categories() == [category]
+      assert Products.list_categories()[:data] == [category]
     end
 
     test "get_category!/1 returns the category with given id" do
@@ -24,7 +24,7 @@ defmodule Server.ProductsTest do
       valid_attrs = %{name: "some name"}
 
       assert {:ok, %Category{} = category} = Products.create_category(valid_attrs)
-      assert category.name == "some name"
+      assert category.name == valid_attrs.name
     end
 
     test "create_category/1 with invalid data returns error changeset" do
@@ -36,7 +36,7 @@ defmodule Server.ProductsTest do
       update_attrs = %{name: "some updated name"}
 
       assert {:ok, %Category{} = category} = Products.update_category(category, update_attrs)
-      assert category.name == "some updated name"
+      assert category.name == update_attrs.name
     end
 
     test "update_category/2 with invalid data returns error changeset" do
@@ -64,22 +64,25 @@ defmodule Server.ProductsTest do
 
     @invalid_attrs %{name: nil, price: nil}
 
+    @tag :f
     test "list_products/0 returns all products" do
-      product = product_fixture()
-      assert Products.list_products() == [product]
+      product = product_fixture()[:product]
+      assert Products.list_products()[:data] == [product]
     end
 
     test "get_product!/1 returns the product with given id" do
-      product = product_fixture()
+      product = product_fixture()[:product]
       assert Products.get_product!(product.id) == product
     end
 
     test "create_product/1 with valid data creates a product" do
-      valid_attrs = %{name: "some name", price: "120.5"}
+      category = category_fixture()
+      valid_attrs = %{name: "some name", price: 120.5, category_id: category.id}
 
       assert {:ok, %Product{} = product} = Products.create_product(valid_attrs)
-      assert product.name == "some name"
-      assert product.price == Decimal.new("120.5")
+      assert product.name == valid_attrs.name
+      assert product.price == valid_attrs.price
+      assert product.category_id == valid_attrs.category_id
     end
 
     test "create_product/1 with invalid data returns error changeset" do
@@ -87,28 +90,30 @@ defmodule Server.ProductsTest do
     end
 
     test "update_product/2 with valid data updates the product" do
-      product = product_fixture()
-      update_attrs = %{name: "some updated name", price: "456.7"}
+      product = product_fixture()[:product]
+      new_category = category_fixture()
+      update_attrs = %{name: "some updated name", price: 456.7, category_id: new_category.id}
 
       assert {:ok, %Product{} = product} = Products.update_product(product, update_attrs)
-      assert product.name == "some updated name"
-      assert product.price == Decimal.new("456.7")
+      assert product.name == update_attrs.name
+      assert product.price == update_attrs.price
+      assert product.category_id == update_attrs.category_id
     end
 
     test "update_product/2 with invalid data returns error changeset" do
-      product = product_fixture()
+      product = product_fixture()[:product]
       assert {:error, %Ecto.Changeset{}} = Products.update_product(product, @invalid_attrs)
       assert product == Products.get_product!(product.id)
     end
 
     test "delete_product/1 deletes the product" do
-      product = product_fixture()
+      product = product_fixture()[:product]
       assert {:ok, %Product{}} = Products.delete_product(product)
       assert_raise Ecto.NoResultsError, fn -> Products.get_product!(product.id) end
     end
 
     test "change_product/1 returns a product changeset" do
-      product = product_fixture()
+      product = product_fixture()[:product]
       assert %Ecto.Changeset{} = Products.change_product(product)
     end
   end

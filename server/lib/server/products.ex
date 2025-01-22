@@ -17,15 +17,21 @@ defmodule Server.Products do
       %{data: [%Category{}, ...], pagination: %{total_count: 100, limit: 10, offset: 0}}
 
   """
-  @spec list_categories(%{limit: integer(), offset: integer(), sort: any(), filter: any()}) :: %{
-          data: [...],
-          pagination: %{
-            total_count: integer(),
-            limit: integer(),
-            offset: integer()
+  @spec list_categories(%{
+          optional(:limit) => integer(),
+          optional(:offset) => integer(),
+          optional(:sort) => any(),
+          optional(:filter) => any()
+        }) ::
+          %{
+            data: [...],
+            pagination: %{
+              total_count: integer(),
+              limit: integer(),
+              offset: integer()
+            }
           }
-        }
-  def list_categories(formatted_params) do
+  def list_categories(formatted_params \\ %{}) do
     DataUtils.list_query(Category, formatted_params)
   end
 
@@ -121,15 +127,21 @@ defmodule Server.Products do
       %{data: [%Product{}, ...], pagination: %{total_count: 100, limit: 10, offset: 0}}
 
   """
-  @spec list_products(%{limit: integer(), offset: integer(), sort: any(), filter: any()}) :: %{
-          data: [...],
-          pagination: %{
-            total_count: integer(),
-            limit: integer(),
-            offset: integer()
+  @spec list_products(%{
+          optional(:limit) => integer(),
+          optional(:offset) => integer(),
+          optional(:sort) => any(),
+          optional(:filter) => any()
+        }) ::
+          %{
+            data: [...],
+            pagination: %{
+              total_count: integer(),
+              limit: integer(),
+              offset: integer()
+            }
           }
-        }
-  def list_products(formatted_params) do
+  def list_products(formatted_params \\ %{}) do
     DataUtils.list_query(Product, formatted_params)
   end
 

@@ -33,11 +33,15 @@ defmodule ServerWeb.UserControllerTest do
 
       conn = get(conn, ~p"/api/users/#{id}")
 
+      %{username: username} = @create_attrs
+
       assert %{
                "id" => ^id,
-               "password" => "some password",
-               "username" => "some username"
+               "password" => hashed_password,
+               "username" => ^username
              } = json_response(conn, 200)["data"]
+
+      assert(Argon2.verify_pass(@create_attrs.password, hashed_password))
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -55,11 +59,15 @@ defmodule ServerWeb.UserControllerTest do
 
       conn = get(conn, ~p"/api/users/#{id}")
 
+      %{username: username} = @update_attrs
+
       assert %{
                "id" => ^id,
-               "password" => "some updated password",
-               "username" => "some updated username"
+               "password" => hashed_password,
+               "username" => ^username
              } = json_response(conn, 200)["data"]
+
+      assert(Argon2.verify_pass(@update_attrs.password, hashed_password))
     end
 
     test "renders errors when data is invalid", %{conn: conn, user: user} do

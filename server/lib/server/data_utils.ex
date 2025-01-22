@@ -38,13 +38,40 @@ defmodule Server.DataUtils do
     }
   end
 
-  def list_query(schema, %{limit: limit, offset: offset, sort: sort, filter: filter}) do
+  @spec list_query(
+          any(),
+          %{
+            optional(:limit) => integer(),
+            optional(:offset) => integer(),
+            optional(:sort) => any(),
+            optional(:filter) => any()
+          }
+        ) ::
+          %{
+            data: [...],
+            pagination: %{
+              total_count: integer(),
+              limit: integer(),
+              offset: integer()
+            }
+          }
+  def list_query(schema, formatted_params) do
+    default = %{
+      limit: @default_limit,
+      offset: @default_offset,
+      sort: [],
+      filter: []
+    }
+
+    %{limit: limit, offset: offset, sort: sort, filter: filter} =
+      Map.merge(default, formatted_params)
+
     query =
       from(
         c in schema,
         where: ^where_clause_from_keyword(filter),
-        limit: ^Utils.coalesce(limit, @default_limit),
-        offset: ^Utils.coalesce(offset, @default_offset),
+        limit: ^limit,
+        offset: ^offset,
         order_by: ^sort
       )
 

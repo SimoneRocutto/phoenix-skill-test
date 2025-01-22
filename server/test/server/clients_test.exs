@@ -8,11 +8,18 @@ defmodule Server.ClientsTest do
 
     import Server.ClientsFixtures
 
-    @invalid_attrs %{location: nil, first_name: nil, last_name: nil, email: nil, phone_number: nil, hobby: nil}
+    @invalid_attrs %{
+      location: nil,
+      first_name: nil,
+      last_name: nil,
+      email: nil,
+      phone_number: nil,
+      hobby: nil
+    }
 
     test "list_clients/0 returns all clients" do
       client = client_fixture()
-      assert Clients.list_clients() == [client]
+      assert Clients.list_clients()[:data] == [client]
     end
 
     test "get_client!/1 returns the client with given id" do
@@ -21,15 +28,22 @@ defmodule Server.ClientsTest do
     end
 
     test "create_client/1 with valid data creates a client" do
-      valid_attrs = %{location: "some location", first_name: "some first_name", last_name: "some last_name", email: "some email", phone_number: "some phone_number", hobby: "some hobby"}
+      valid_attrs = %{
+        location: "some location",
+        first_name: "some first_name",
+        last_name: "some last_name",
+        email: "some@email.com",
+        phone_number: "+442378394212",
+        hobby: "some hobby"
+      }
 
       assert {:ok, %Client{} = client} = Clients.create_client(valid_attrs)
-      assert client.location == "some location"
-      assert client.first_name == "some first_name"
-      assert client.last_name == "some last_name"
-      assert client.email == "some email"
-      assert client.phone_number == "some phone_number"
-      assert client.hobby == "some hobby"
+      assert client.location == valid_attrs.location
+      assert client.first_name == valid_attrs.first_name
+      assert client.last_name == valid_attrs.last_name
+      assert client.email == valid_attrs.email
+      assert client.phone_number == valid_attrs.phone_number
+      assert client.hobby == valid_attrs.hobby
     end
 
     test "create_client/1 with invalid data returns error changeset" do
@@ -38,15 +52,23 @@ defmodule Server.ClientsTest do
 
     test "update_client/2 with valid data updates the client" do
       client = client_fixture()
-      update_attrs = %{location: "some updated location", first_name: "some updated first_name", last_name: "some updated last_name", email: "some updated email", phone_number: "some updated phone_number", hobby: "some updated hobby"}
+
+      update_attrs = %{
+        location: "some updated location",
+        first_name: "some updated first_name",
+        last_name: "some updated last_name",
+        email: "mynew@mail.com",
+        phone_number: "+390982340983",
+        hobby: "some updated hobby"
+      }
 
       assert {:ok, %Client{} = client} = Clients.update_client(client, update_attrs)
-      assert client.location == "some updated location"
-      assert client.first_name == "some updated first_name"
-      assert client.last_name == "some updated last_name"
-      assert client.email == "some updated email"
-      assert client.phone_number == "some updated phone_number"
-      assert client.hobby == "some updated hobby"
+      assert client.location == update_attrs.location
+      assert client.first_name == update_attrs.first_name
+      assert client.last_name == update_attrs.last_name
+      assert client.email == update_attrs.email
+      assert client.phone_number == update_attrs.phone_number
+      assert client.hobby == update_attrs.hobby
     end
 
     test "update_client/2 with invalid data returns error changeset" do

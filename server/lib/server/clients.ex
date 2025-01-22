@@ -17,15 +17,21 @@ defmodule Server.Clients do
       %{data: [%Client{}, ...], pagination: %{total_count: 100, limit: 10, offset: 0}}
 
   """
-  @spec list_clients(%{limit: integer(), offset: integer(), sort: any(), filter: any()}) :: %{
-          data: [...],
-          pagination: %{
-            total_count: integer(),
-            limit: integer(),
-            offset: integer()
+  @spec list_clients(%{
+          optional(:limit) => integer(),
+          optional(:offset) => integer(),
+          optional(:sort) => any(),
+          optional(:filter) => any()
+        }) ::
+          %{
+            data: [...],
+            pagination: %{
+              total_count: integer(),
+              limit: integer(),
+              offset: integer()
+            }
           }
-        }
-  def list_clients(formatted_params) do
+  def list_clients(formatted_params \\ %{}) do
     DataUtils.list_query(Client, formatted_params)
   end
 

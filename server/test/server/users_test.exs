@@ -24,8 +24,8 @@ defmodule Server.UsersTest do
       valid_attrs = %{username: "some username", password: "some password"}
 
       assert {:ok, %User{} = user} = Users.create_user(valid_attrs)
-      assert user.username == "some username"
-      assert {:ok, user} == Argon2.check_pass(user, "some password", hash_key: :password)
+      assert user.username == valid_attrs.username
+      assert Argon2.verify_pass(valid_attrs.password, user.password)
     end
 
     test "create_user/1 with invalid data returns error changeset" do
@@ -37,8 +37,8 @@ defmodule Server.UsersTest do
       update_attrs = %{username: "some updated username", password: "some updated password"}
 
       assert {:ok, %User{} = user} = Users.update_user(user, update_attrs)
-      assert user.username == "some updated username"
-      assert {:ok, user} == Argon2.check_pass(user, "some updated password", hash_key: :password)
+      assert user.username == update_attrs.username
+      assert Argon2.verify_pass(update_attrs.password, user.password)
     end
 
     test "update_user/2 with invalid data returns error changeset" do
