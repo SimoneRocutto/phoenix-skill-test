@@ -16,13 +16,14 @@ defmodule ServerWeb.UserControllerTest do
   @invalid_attrs %{username: nil, password: nil}
 
   setup %{conn: conn} do
-    {:ok, conn: put_req_header(conn, "accept", "application/json")}
+    Server.TestUtils.protected_route_setup(conn)
   end
 
   describe "index" do
     test "lists all users", %{conn: conn} do
       conn = get(conn, ~p"/api/users")
-      assert json_response(conn, 200)["data"] == []
+      # Length is 1 because admin user is present (see setup higher up)
+      assert length(json_response(conn, 200)["data"]) == 1
     end
   end
 

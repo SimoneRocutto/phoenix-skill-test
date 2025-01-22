@@ -25,10 +25,6 @@ defmodule ServerWeb.Router do
     pipe_through [
       :api
     ]
-
-    resources "/clients", ClientController, except: [:new, :edit]
-    resources "/categories", CategoryController, except: [:new, :edit]
-    resources "/products", ProductController, except: [:new, :edit]
   end
 
   scope "/api", ServerWeb do
@@ -66,6 +62,9 @@ defmodule ServerWeb.Router do
     get "/protected", AuthController, :protected
     post "/logout", SessionController, :logout
     resources "/users", UserController, except: [:new, :edit]
+    resources "/clients", ClientController, except: [:new, :edit]
+    resources "/categories", CategoryController, except: [:new, :edit]
+    resources "/products", ProductController, except: [:new, :edit]
     post "/refresh", SessionController, :refresh_token
   end
 

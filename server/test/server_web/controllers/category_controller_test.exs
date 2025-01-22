@@ -26,7 +26,7 @@ defmodule ServerWeb.CategoryControllerTest do
   @invalid_attrs %{name: nil}
 
   setup %{conn: conn} do
-    {:ok, conn: put_req_header(conn, "accept", "application/json")}
+    Server.TestUtils.protected_route_setup(conn)
   end
 
   describe "index" do
