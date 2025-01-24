@@ -10,7 +10,7 @@ defmodule ServerWeb.SessionController do
          {:ok, token, _full_claims} <- Guardian.encode_and_sign(user) do
       conn
       |> put_status(:created)
-      |> json(%{user: "success!", token: token})
+      |> render(:show, user: user, token: token)
     end
   end
 
@@ -42,7 +42,9 @@ defmodule ServerWeb.SessionController do
 
   defp login_reply({:ok, user}, conn) do
     {:ok, token, _full_claims} = Guardian.encode_and_sign(user, %{}, token_type: "access")
-    json(conn, %{user: "user", token: token})
+
+    conn
+    |> render(:show, user: user, token: token)
   end
 
   # docs are not applicable here.

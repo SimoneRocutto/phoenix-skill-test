@@ -7,8 +7,11 @@ defmodule Server.TestUtils do
   }
 
   def protected_route_setup(conn) do
-    %{"token" => token} =
-      json_response(ServerWeb.SessionController.create(conn, %{"user" => @admin_attrs}), 201)
+    %{"data" => %{"token" => token}} =
+      conn
+      |> put_req_header("accept", "application/json")
+      |> post(~p"/api/register", user: @admin_attrs)
+      |> json_response(201)
 
     {:ok,
      conn:
