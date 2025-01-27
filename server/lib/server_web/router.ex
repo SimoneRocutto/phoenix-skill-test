@@ -14,7 +14,7 @@ defmodule ServerWeb.Router do
   end
 
   pipeline :auth do
-    plug Server.Users.Pipeline
+    plug Server.Users.AuthPipeline
   end
 
   pipeline :ensure_auth do
@@ -55,11 +55,11 @@ defmodule ServerWeb.Router do
     post "/login", SessionController, :login
   end
 
+  # Must pass a valid token (logged in)
   scope "/api", ServerWeb do
     pipe_through [:api, :ensure_auth]
 
     get "/reset-token", UserController, :get_reset_token
-    get "/protected", AuthController, :protected
     post "/logout", SessionController, :logout
     resources "/users", UserController, except: [:new, :edit]
     resources "/clients", ClientController, except: [:new, :edit]

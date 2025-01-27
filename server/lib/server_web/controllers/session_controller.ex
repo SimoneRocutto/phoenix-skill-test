@@ -30,24 +30,23 @@ defmodule ServerWeb.SessionController do
     json(conn, %{new_token: new_token})
   end
 
-  # def logout(conn, _) do
-  #   conn
-  #   # This module's full name is Auth.Users.Guardian.Plug,
-  #   |> Guardian.Plug.sign_out()
+  # This should be tested in conjunction with a client application.
+  # The client should store an auth_token in the cookies and we should
+  # unset it on logout.
+  def logout(conn, _) do
+    conn = conn |> delete_resp_cookie("auth_token")
 
-  #   # and the arguments specified in the Guardian.Plug.sign_out()
-  #   # |> redirect(to: "/login")
-  #   json(conn, %{message: "logged out"})
-  # end
+    json(conn, %{message: "logged out"})
+  end
 
   defp login_reply({:ok, user}, conn) do
     {:ok, token, _full_claims} = Guardian.encode_and_sign(user, %{}, token_type: "access")
 
     conn
+    # Add something like this for client application (max age etc should be set).
+    # |> put_resp_cookie("auth_token", token)
     |> render(:show, user: user, token: token)
   end
-
-  # docs are not applicable here.
 
   defp login_reply({:error, reason}, conn) do
     json(conn, %{error: reason})
