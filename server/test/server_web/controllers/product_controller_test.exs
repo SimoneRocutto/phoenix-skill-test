@@ -137,8 +137,7 @@ defmodule ServerWeb.ProductControllerTest do
 
     test "renders product when data is valid", %{
       conn: conn,
-      product: %Product{id: id} = product,
-      category: %Category{id: category_id}
+      product: %Product{id: id, category_id: category_id} = product
     } do
       conn = put(conn, ~p"/api/products/#{product}", product: @update_attrs)
       assert %{"id" => ^id} = json_response(conn, 200)["data"]
@@ -173,7 +172,8 @@ defmodule ServerWeb.ProductControllerTest do
   end
 
   defp create_product(_) do
-    product_fixture()
+    product = product_fixture(%{}, true)
+    %{product: product}
   end
 
   defp create_category(_) do
@@ -183,7 +183,7 @@ defmodule ServerWeb.ProductControllerTest do
 
   defp create_multiple_products(_) do
     @create_attrs_list
-    |> Enum.map(&product_fixture(%{product: &1, category: %{}}))
+    |> Enum.map(&product_fixture(&1, true))
     |> then(&%{products: &1})
   end
 

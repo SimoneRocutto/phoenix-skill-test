@@ -66,12 +66,12 @@ defmodule Server.ProductsTest do
 
     @tag :f
     test "list_products/0 returns all products" do
-      product = product_fixture()[:product]
+      product = product_fixture(%{}, true)
       assert Products.list_products()[:data] == [product]
     end
 
     test "get_product!/1 returns the product with given id" do
-      product = product_fixture()[:product]
+      product = product_fixture(%{}, true)
       assert Products.get_product!(product.id) == product
     end
 
@@ -90,7 +90,7 @@ defmodule Server.ProductsTest do
     end
 
     test "update_product/2 with valid data updates the product" do
-      product = product_fixture()[:product]
+      product = product_fixture(%{}, true)
       new_category = category_fixture()
       update_attrs = %{name: "some updated name", price: 456.7, category_id: new_category.id}
 
@@ -101,20 +101,86 @@ defmodule Server.ProductsTest do
     end
 
     test "update_product/2 with invalid data returns error changeset" do
-      product = product_fixture()[:product]
+      product = product_fixture(%{}, true)
       assert {:error, %Ecto.Changeset{}} = Products.update_product(product, @invalid_attrs)
       assert product == Products.get_product!(product.id)
     end
 
     test "delete_product/1 deletes the product" do
-      product = product_fixture()[:product]
+      product = product_fixture(%{}, true)
       assert {:ok, %Product{}} = Products.delete_product(product)
       assert_raise Ecto.NoResultsError, fn -> Products.get_product!(product.id) end
     end
 
     test "change_product/1 returns a product changeset" do
-      product = product_fixture()[:product]
+      product = product_fixture(%{}, true)
       assert %Ecto.Changeset{} = Products.change_product(product)
+    end
+  end
+
+  describe "sold_products" do
+    alias Server.Products.SoldProduct
+
+    import Server.ProductsFixtures
+
+    @invalid_attrs %{selling_time: nil}
+
+    test "list_sold_products/0 returns all sold_products" do
+      sold_product = sold_product_fixture(%{}, true)
+      assert Products.list_sold_products() == [sold_product]
+    end
+
+    test "get_sold_product!/1 returns the sold_product with given id" do
+      sold_product = sold_product_fixture(%{}, true)
+      assert Products.get_sold_product!(sold_product.id) == sold_product
+    end
+
+    test "create_sold_product/1 with valid data creates a sold_product" do
+      %{id: product_id} = product_fixture(%{}, true)
+      %{id: client_id} = Server.ClientsFixtures.client_fixture()
+
+      valid_attrs = %{
+        selling_time: ~U[2025-01-23 15:51:00Z],
+        product_id: product_id,
+        client_id: client_id
+      }
+
+      assert {:ok, %SoldProduct{} = sold_product} = Products.create_sold_product(valid_attrs)
+      assert sold_product.selling_time == ~U[2025-01-23 15:51:00Z]
+    end
+
+    test "create_sold_product/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Products.create_sold_product(@invalid_attrs)
+    end
+
+    test "update_sold_product/2 with valid data updates the sold_product" do
+      sold_product = sold_product_fixture(%{}, true)
+      update_attrs = %{selling_time: ~U[2025-01-24 15:51:00Z]}
+
+      assert {:ok, %SoldProduct{} = sold_product} =
+               Products.update_sold_product(sold_product, update_attrs)
+
+      assert sold_product.selling_time == ~U[2025-01-24 15:51:00Z]
+    end
+
+    test "update_sold_product/2 with invalid data returns error changeset" do
+      sold_product = sold_product_fixture(%{}, true)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Products.update_sold_product(sold_product, @invalid_attrs)
+
+      assert sold_product == Products.get_sold_product!(sold_product.id)
+    end
+
+    test "delete_sold_product/1 deletes the sold_product" do
+      sold_product = sold_product_fixture(%{}, true)
+      assert {:ok, %SoldProduct{}} = Products.delete_sold_product(sold_product)
+      assert_raise Ecto.NoResultsError, fn -> Products.get_sold_product!(sold_product.id) end
+    end
+
+    test "change_sold_product/1 returns a sold_product changeset" do
+      sold_product = sold_product_fixture(%{}, true)
+      assert %Ecto.Changeset{} = Products.change_sold_product(sold_product)
     end
   end
 end

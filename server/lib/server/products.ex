@@ -225,4 +225,178 @@ defmodule Server.Products do
   def change_product(%Product{} = product, attrs \\ %{}) do
     Product.changeset(product, attrs)
   end
+
+  alias Server.Products.SoldProduct
+
+  @doc """
+  Returns the list of sold_products.
+
+  ## Examples
+
+      iex> list_sold_products()
+      [%SoldProduct{}, ...]
+
+  """
+  def list_sold_products do
+    Repo.all(SoldProduct)
+  end
+
+  @doc """
+  Gets a single sold_product.
+
+  Raises `Ecto.NoResultsError` if the Sold product does not exist.
+
+  ## Examples
+
+      iex> get_sold_product!(123)
+      %SoldProduct{}
+
+      iex> get_sold_product!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_sold_product!(id), do: Repo.get!(SoldProduct, id)
+
+  @doc """
+  Creates a sold_product.
+
+  ## Examples
+
+      iex> create_sold_product(%{field: value})
+      {:ok, %SoldProduct{}}
+
+      iex> create_sold_product(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_sold_product(attrs \\ %{}) do
+    %SoldProduct{}
+    |> SoldProduct.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a sold_product.
+
+  ## Examples
+
+      iex> update_sold_product(sold_product, %{field: new_value})
+      {:ok, %SoldProduct{}}
+
+      iex> update_sold_product(sold_product, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_sold_product(%SoldProduct{} = sold_product, attrs) do
+    sold_product
+    |> SoldProduct.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a sold_product.
+
+  ## Examples
+
+      iex> delete_sold_product(sold_product)
+      {:ok, %SoldProduct{}}
+
+      iex> delete_sold_product(sold_product)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_sold_product(%SoldProduct{} = sold_product) do
+    Repo.delete(sold_product)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking sold_product changes.
+
+  ## Examples
+
+      iex> change_sold_product(sold_product)
+      %Ecto.Changeset{data: %SoldProduct{}}
+
+  """
+  def change_sold_product(%SoldProduct{} = sold_product, attrs \\ %{}) do
+    SoldProduct.changeset(sold_product, attrs)
+  end
+
+  @doc """
+  Returns sold products count grouped by category.
+
+  ## Examples
+
+      iex> sold_products_by_category()
+      [
+        %{"category_name" => "figures", "sold_products_count" => 4},
+        %{"category_name" => "manga", "sold_products_count" => 3}
+      ]
+
+  """
+  def sold_products_by_category do
+    query =
+      from sp in SoldProduct,
+        join: p in Product,
+        on: sp.product_id == p.id,
+        join: c in Category,
+        on: p.category_id == c.id,
+        order_by: c.name,
+        group_by: c.id,
+        select: %{category_id: c.id, category_name: c.name, sold_products_count: count(c.id)}
+
+    Repo.all(query)
+  end
+
+  @doc """
+  Returns sold products count grouped by month.
+
+  ## Examples
+
+      iex> sold_products_by_month()
+      [
+        %{"count" => 2, "date" => "2024-11-01T00:00:00.000000"},
+        %{"count" => 1, "date" => "2024-12-01T00:00:00.000000"},
+        %{"count" => 4, "date" => "2025-01-01T00:00:00.000000"}
+      ]
+  """
+  def sold_products_by_month do
+    query =
+      from sp in SoldProduct,
+        order_by: [fragment("date_trunc('month', ?)", sp.selling_time)],
+        group_by: [fragment("date_trunc('month', ?)", sp.selling_time)],
+        select: %{
+          date: fragment("date_trunc('month', ?)", sp.selling_time),
+          count: count(sp.id)
+        }
+
+    Repo.all(query)
+  end
+
+  @doc """
+  Returns money income by month.
+
+  ## Examples
+
+      iex> monthly_income()
+      [
+        %{"date" => "2024-11-01T00:00:00.000000", "income" => 69.98},
+        %{"date" => "2024-12-01T00:00:00.000000", "income" => 29.99},
+        %{"date" => "2025-01-01T00:00:00.000000", "income" => 54.96}
+      ]
+  """
+  def monthly_income do
+    query =
+      from sp in SoldProduct,
+        join: p in Product,
+        on: sp.product_id == p.id,
+        order_by: [fragment("date_trunc('month', ?)", sp.selling_time)],
+        group_by: [fragment("date_trunc('month', ?)", sp.selling_time)],
+        select: %{
+          date: fragment("date_trunc('month', ?)", sp.selling_time),
+          income: sum(p.price)
+        }
+
+    Repo.all(query)
+  end
 end

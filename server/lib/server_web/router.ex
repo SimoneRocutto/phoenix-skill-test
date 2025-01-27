@@ -65,6 +65,23 @@ defmodule ServerWeb.Router do
     resources "/clients", ClientController, except: [:new, :edit]
     resources "/categories", CategoryController, except: [:new, :edit]
     resources "/products", ProductController, except: [:new, :edit]
+
+    get "/sold-products",
+        SoldProductController,
+        :index
+
+    get "/sold-products/sold-products-by-category",
+        SoldProductController,
+        :sold_products_by_category
+
+    get "/sold-products/sold-products-by-month",
+        SoldProductController,
+        :sold_products_by_month
+
+    get "/sold-products/monthly-income",
+        SoldProductController,
+        :monthly_income
+
     post "/refresh", SessionController, :refresh_token
   end
 

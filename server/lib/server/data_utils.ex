@@ -68,7 +68,7 @@ defmodule Server.DataUtils do
 
     query =
       from(
-        c in schema,
+        m in schema,
         where: ^where_clause_from_keyword(filter),
         limit: ^limit,
         offset: ^offset,
