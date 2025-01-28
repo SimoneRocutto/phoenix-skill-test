@@ -21,7 +21,11 @@ defmodule ServerWeb.SessionController do
 
   # If router passes through the pipeline, then the token is valid
   def verify_token(conn, %{}) do
-    json(conn, %{message: "valid_token"})
+    if Guardian.Plug.authenticated?(conn) do
+      json(conn, %{message: "valid_token"})
+    else
+      json(conn, %{message: "invalid_token"})
+    end
   end
 
   def refresh_token(conn, %{}) do

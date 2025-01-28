@@ -33,17 +33,22 @@ defmodule ServerWeb.SessionControllerTest do
   end
 
   describe "verify" do
-    setup %{conn: conn} do
-      Server.TestUtils.protected_route_setup(conn)
+    @tag :f
+    test "recognizes missing token as invalid", %{conn: conn} do
+      test_token_validity(conn, nil, true)
     end
 
+    @tag :f
     test "recognizes valid token", %{conn: conn} do
+      {:ok, conn: conn} = Server.TestUtils.protected_route_setup(conn)
       test_token_validity(conn)
     end
 
+    @tag :f
     test "recognizes invalid token", %{conn: conn} do
       invalid_token = "helloiamnotvalid"
 
+      {:ok, conn: conn} = Server.TestUtils.protected_route_setup(conn)
       test_token_validity(conn, invalid_token, true)
     end
   end
@@ -80,12 +85,12 @@ defmodule ServerWeb.SessionControllerTest do
     |> post(~p"/api/verify")
     |> json_response(200)
     |> Map.get("message")
-    |> assert(
-      if test_invalid do
-        "invalid_token"
-      else
-        "valid_token"
+    |> then(
+      &case &1 do
+        "invalid_token" -> test_invalid
+        "valid_token" -> !test_invalid
       end
     )
+    |> assert("token validity is not as expected")
   end
 end
