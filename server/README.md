@@ -16,7 +16,7 @@ To start your Phoenix server:
 
   - Make sure Docker is installed on your machine
   - `cd server`
-  - Set the environment variables `GUARDIAN_SECRET` and `SECRET_KEY_BASE` as explained in the previous section
+  - Set the environment variables `GUARDIAN_SECRET` and `SECRET_KEY_BASE` as explained in the previous section. You can also change the Docker compose-specific env variables (`POSTGRES_USER`, `POSTGRES_PASSWORD` and `POSTGRES_DB`)
   - `docker compose up -d`
   - `docker compose exec phoenix bash`
   - From the phoenix container shell launch these commands:
