@@ -27,3 +27,5 @@ server-*.tar
 
 # Language server files
 /.elixir_ls/
+
+.env
