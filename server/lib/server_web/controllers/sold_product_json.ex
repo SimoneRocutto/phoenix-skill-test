@@ -18,7 +18,9 @@ defmodule ServerWeb.SoldProductJSON do
   defp data(%SoldProduct{} = sold_product) do
     %{
       id: sold_product.id,
-      selling_time: sold_product.selling_time
+      selling_time: sold_product.selling_time,
+      client_id: sold_product.client_id,
+      product_id: sold_product.product_id
     }
   end
 end

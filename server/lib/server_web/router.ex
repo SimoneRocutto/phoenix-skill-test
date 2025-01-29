@@ -54,15 +54,13 @@ defmodule ServerWeb.Router do
     pipe_through [:api, :ensure_auth]
 
     get "/reset-token", UserController, :get_reset_token
+    post "/refresh", SessionController, :refresh_token
     post "/logout", SessionController, :logout
+
     resources "/users", UserController, except: [:new, :edit]
     resources "/clients", ClientController, except: [:new, :edit]
     resources "/categories", CategoryController, except: [:new, :edit]
     resources "/products", ProductController, except: [:new, :edit]
-
-    get "/sold-products",
-        SoldProductController,
-        :index
 
     get "/sold-products/sold-products-by-category",
         SoldProductController,
@@ -76,7 +74,9 @@ defmodule ServerWeb.Router do
         SoldProductController,
         :monthly_income
 
-    post "/refresh", SessionController, :refresh_token
+    resources "/sold-products",
+              SoldProductController,
+              except: [:new, :edit]
   end
 
   scope "/api", ServerWeb do

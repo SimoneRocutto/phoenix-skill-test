@@ -15,6 +15,7 @@ To start your Phoenix server:
   - Change env variables values - `GUARDIAN_SECRET` should be changed to a different string (you can use `mix guardian.gen.secret` to get it). The same is true for `SECRET_KEY_BASE`.
   - Source .env file with `source .env`
   - Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+  - Extra: if you want to test the application you'll probably need to create several clients, categories, products and sold products. You can use apis for this (see below docs)
 
 ### Test
 
@@ -33,6 +34,26 @@ To start your Phoenix server:
     - Create a user (necessary to login and call apis that require a valid JWT):
       - `iex -S mix`
       - `Server.Users.create_user(%{username: "me", password: "secret"})`
+
+## Types of data
+
+### Users
+
+Admin users that can use the application.
+
+### Clients
+
+Clients that buy products in a hypothetic user application.
+
+### Products
+
+Products that clients can buy.
+
+### Sold products
+
+These are not real products, they are records that tell when a client has bought a certain product. These are basically logs that keep track of when users buy products.
+
+This kind of data is needed to generate aggregate data for monitoring charts.
 
 ## API Docs
 
@@ -464,14 +485,81 @@ Response: empty response with 204 status
 Gets the list of sold-products. This cannot be filtered (it shouldn't be enabled for the actual ecommerce back-office application).
 
 > Response:  
-[
-    {
+{
+    "data": [
+        {
+            "id": 1,
+            "name": "Phantom Blood vol. 1",
+            "category_id": 1,
+            "price": 9.99
+        }
+    ]
+}
+
+**A** GET `/api/sold-products/{sold_product_id}`
+
+Gets a specific sold product.
+
+> Response:  
+{
+    "data": {
         "id": 1,
-        "selling_time": "2024-11-01T00:00:00.000000"
+        "selling_time": "2024-11-01T00:00:00Z",
         "client_id": 1,
         "product_id": 1
     }
-]
+}
+
+**A** POST `/api/sold-products/{sold_product_id}`
+
+Creates a sold product.
+
+> Payload:  
+{
+    "sold_product": {
+        "client_id": 1,
+        "product_id": 1,
+        "selling_time": "2024-11-01T00:00:00.00Z"
+    }
+}  
+Response:  
+{
+    "data": {
+        "id": 1,
+        "selling_time": "2024-11-01T00:00:00Z",
+        "client_id": 1,
+        "product_id": 1
+    }
+}
+
+**A** PUT/PATCH `/api/sold-products/{sold_product_id}`
+
+Updates a sold product.
+
+> Payload:  
+{
+    "sold_product": {
+        "client_id": 1,
+        "product_id": 1,
+        "selling_time": "2024-11-01T00:00:00.00Z"
+    }
+}  
+Response:  
+{
+    "data": {
+        "id": 1,
+        "selling_time": "2024-11-01T00:00:00Z",
+        "client_id": 1,
+        "product_id": 1
+    }
+}
+
+**A** DELETE `api/sold-products/{sold_product_id}`
+
+Deletes a sold product.
+
+Payload: not needed  
+Response: empty response with 204 status
 
 #### Data for charts
 

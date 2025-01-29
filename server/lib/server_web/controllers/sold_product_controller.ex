@@ -11,25 +11,6 @@ defmodule ServerWeb.SoldProductController do
     render(conn, :index, sold_products: sold_products)
   end
 
-  def sold_products_by_category(conn, _params) do
-    res = Products.sold_products_by_category()
-    json(conn, res)
-  end
-
-  def sold_products_by_month(conn, _params) do
-    res = Products.sold_products_by_month()
-    json(conn, res)
-  end
-
-  def monthly_income(conn, _params) do
-    res = Products.monthly_income()
-    json(conn, res)
-  end
-
-  # Below functions are not used in this sample application,
-  # though they would be needed for a fully working ecommerce
-  # app.
-
   def create(conn, %{"sold_product" => sold_product_params}) do
     with {:ok, %SoldProduct{} = sold_product} <- Products.create_sold_product(sold_product_params) do
       conn
@@ -68,5 +49,20 @@ defmodule ServerWeb.SoldProductController do
           send_resp(conn, :no_content, "")
         end
     end
+  end
+
+  def sold_products_by_category(conn, _params) do
+    res = Products.sold_products_by_category()
+    json(conn, res)
+  end
+
+  def sold_products_by_month(conn, _params) do
+    res = Products.sold_products_by_month()
+    json(conn, res)
+  end
+
+  def monthly_income(conn, _params) do
+    res = Products.monthly_income()
+    json(conn, res)
   end
 end

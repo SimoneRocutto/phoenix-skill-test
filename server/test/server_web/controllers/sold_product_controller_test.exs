@@ -3,6 +3,19 @@ defmodule ServerWeb.SoldProductControllerTest do
 
   import Server.ProductsFixtures
 
+  alias Server.Products.Product
+  alias Server.Products.SoldProduct
+  alias Server.Clients.Client
+
+  @create_attrs %{
+    selling_time: ~U[2025-01-23 16:50:00Z]
+  }
+  @invalid_attrs %{
+    selling_time: "helloiamnotavaliddate"
+  }
+  @update_attrs %{
+    selling_time: ~U[2024-01-23 16:50:00Z]
+  }
   @sample_categories [
     %{
       category: %{
@@ -84,6 +97,81 @@ defmodule ServerWeb.SoldProductControllerTest do
     end
   end
 
+  describe "create sold product" do
+    setup [:create_product, :create_client]
+
+    test "renders sold product when data is valid", %{
+      conn: conn,
+      product: %Product{id: product_id},
+      client: %Client{id: client_id}
+    } do
+      conn =
+        post(conn, ~p"/api/sold-products",
+          sold_product: Map.merge(@create_attrs, %{product_id: product_id, client_id: client_id})
+        )
+
+      assert %{"id" => id} = json_response(conn, 201)["data"]
+
+      conn = get(conn, ~p"/api/sold-products/#{id}")
+
+      assert %{
+               "id" => ^id,
+               "selling_time" => "2025-01-23T16:50:00Z",
+               "client_id" => ^client_id,
+               "product_id" => ^product_id
+             } = json_response(conn, 200)["data"]
+    end
+
+    test "renders errors when data is invalid", %{conn: conn} do
+      conn = post(conn, ~p"/api/sold-products", sold_product: @invalid_attrs)
+      assert json_response(conn, 422)["errors"] != %{}
+    end
+  end
+
+  describe "update sold product" do
+    setup [:create_sold_product]
+
+    test "renders sold product when data is valid", %{
+      conn: conn,
+      sold_product:
+        %SoldProduct{id: id, product_id: product_id, client_id: client_id} = sold_product
+    } do
+      conn = put(conn, ~p"/api/sold-products/#{sold_product}", sold_product: @update_attrs)
+      assert %{"id" => ^id} = json_response(conn, 200)["data"]
+
+      conn = get(conn, ~p"/api/sold-products/#{id}")
+
+      assert %{
+               "id" => ^id,
+               "selling_time" => "2024-01-23T16:50:00Z",
+               "client_id" => ^client_id,
+               "product_id" => ^product_id
+             } = json_response(conn, 200)["data"]
+    end
+
+    test "renders errors when data is invalid", %{conn: conn, sold_product: sold_product} do
+      conn = put(conn, ~p"/api/sold-products/#{sold_product}", sold_product: @invalid_attrs)
+      assert json_response(conn, 422)["errors"] != %{}
+    end
+  end
+
+  describe "delete sold product" do
+    setup [:create_sold_product]
+
+    test "deletes chosen sold product", %{conn: conn, sold_product: sold_product} do
+      conn = delete(conn, ~p"/api/sold-products/#{sold_product}")
+      assert response(conn, 204)
+
+      conn = get(conn, ~p"/api/sold-products/#{sold_product}")
+      json_response(conn, 404)
+    end
+
+    test "renders errors when invalid id is passed", %{conn: conn, sold_product: _sold_product} do
+      conn = delete(conn, ~p"/api/sold-products/-1")
+      json_response(conn, 404)
+    end
+  end
+
   describe "sold products by category" do
     setup [:create_sold_products]
 
@@ -126,6 +214,21 @@ defmodule ServerWeb.SoldProductControllerTest do
       ] =
         json_response(conn, 200)
     end
+  end
+
+  defp create_client(_) do
+    client = Server.ClientsFixtures.client_fixture()
+    %{client: client}
+  end
+
+  defp create_product(_) do
+    product = product_fixture(%{}, true)
+    %{product: product}
+  end
+
+  defp create_sold_product(_) do
+    sold_product = sold_product_fixture(%{}, true)
+    %{sold_product: sold_product}
   end
 
   defp create_sold_products(_) do
