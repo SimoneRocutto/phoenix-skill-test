@@ -8,7 +8,7 @@ defmodule Server.Users.ErrorHandler do
     body = to_string(type)
 
     conn
-    |> put_resp_content_type("text/plain")
-    |> send_resp(402, body)
+    |> put_resp_content_type("application/json")
+    |> send_resp(200, Phoenix.json_library().encode_to_iodata!(%{errors: %{detail: body}}))
   end
 end
