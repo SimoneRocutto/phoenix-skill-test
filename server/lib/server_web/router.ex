@@ -23,12 +23,6 @@ defmodule ServerWeb.Router do
 
   scope "/api", ServerWeb do
     pipe_through [
-      :api
-    ]
-  end
-
-  scope "/api", ServerWeb do
-    pipe_through [
       :api,
       :verify
     ]
@@ -83,6 +77,14 @@ defmodule ServerWeb.Router do
         :monthly_income
 
     post "/refresh", SessionController, :refresh_token
+  end
+
+  scope "/api", ServerWeb do
+    pipe_through [
+      :api
+    ]
+
+    match(:*, "/*path", NotFoundController, :not_found)
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
