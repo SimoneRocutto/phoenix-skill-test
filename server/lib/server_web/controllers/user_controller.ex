@@ -62,4 +62,8 @@ defmodule ServerWeb.UserController do
     Users.update_user(user, %{password: password})
     json(conn, %{message: "password change successful!"})
   end
+
+  def reset_password(_conn, _) do
+    {:error, :bad_request}
+  end
 end
