@@ -20,23 +20,33 @@ defmodule ServerWeb.UserController do
   end
 
   def show(conn, %{"id" => id}) do
-    user = Users.get_user!(id)
-    render(conn, :show, user: user)
+    case Users.get_user(id) do
+      nil -> {:error, :not_found}
+      user -> render(conn, :show, user: user)
+    end
   end
 
   def update(conn, %{"id" => id, "user" => user_params}) do
-    user = Users.get_user!(id)
+    case Users.get_user(id) do
+      nil ->
+        {:error, :not_found}
 
-    with {:ok, %User{} = user} <- Users.update_user(user, user_params) do
-      render(conn, :show, user: user)
+      user ->
+        with {:ok, %User{} = user} <- Users.update_user(user, user_params) do
+          render(conn, :show, user: user)
+        end
     end
   end
 
   def delete(conn, %{"id" => id}) do
-    user = Users.get_user!(id)
+    case Users.get_user(id) do
+      nil ->
+        {:error, :not_found}
 
-    with {:ok, %User{}} <- Users.delete_user(user) do
-      send_resp(conn, :no_content, "")
+      user ->
+        with {:ok, %User{}} <- Users.delete_user(user) do
+          send_resp(conn, :no_content, "")
+        end
     end
   end
 

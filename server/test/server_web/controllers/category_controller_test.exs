@@ -139,9 +139,13 @@ defmodule ServerWeb.CategoryControllerTest do
       conn = delete(conn, ~p"/api/categories/#{category}")
       assert response(conn, 204)
 
-      assert_error_sent 404, fn ->
-        get(conn, ~p"/api/categories/#{category}")
-      end
+      conn = get(conn, ~p"/api/categories/#{category}")
+      json_response(conn, 404)
+    end
+
+    test "renders errors when invalid id is passed", %{conn: conn, category: _category} do
+      conn = delete(conn, ~p"/api/categories/-1")
+      json_response(conn, 404)
     end
   end
 

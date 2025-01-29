@@ -165,9 +165,13 @@ defmodule ServerWeb.ProductControllerTest do
       conn = delete(conn, ~p"/api/products/#{product}")
       assert response(conn, 204)
 
-      assert_error_sent 404, fn ->
-        get(conn, ~p"/api/products/#{product}")
-      end
+      conn = get(conn, ~p"/api/products/#{product}")
+      json_response(conn, 404)
+    end
+
+    test "renders errors when invalid id is passed", %{conn: conn, product: _product} do
+      conn = delete(conn, ~p"/api/products/-1")
+      json_response(conn, 404)
     end
   end
 

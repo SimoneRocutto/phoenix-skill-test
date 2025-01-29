@@ -75,6 +75,11 @@ defmodule ServerWeb.UserControllerTest do
       conn = put(conn, ~p"/api/users/#{user}", user: @invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}
     end
+
+    test "renders errors when no data is passed", %{conn: conn, user: user} do
+      conn = put(conn, ~p"/api/users/#{user}", user: @invalid_attrs)
+      assert json_response(conn, 422)["errors"] != %{}
+    end
   end
 
   describe "delete user" do
@@ -84,9 +89,13 @@ defmodule ServerWeb.UserControllerTest do
       conn = delete(conn, ~p"/api/users/#{user}")
       assert response(conn, 204)
 
-      assert_error_sent 404, fn ->
-        get(conn, ~p"/api/users/#{user}")
-      end
+      conn = get(conn, ~p"/api/users/#{user}")
+      json_response(conn, 404)
+    end
+
+    test "renders errors when invalid id is passed", %{conn: conn, user: _user} do
+      conn = delete(conn, ~p"/api/users/-1")
+      json_response(conn, 404)
     end
   end
 

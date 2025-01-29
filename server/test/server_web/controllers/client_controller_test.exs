@@ -212,9 +212,13 @@ defmodule ServerWeb.ClientControllerTest do
       conn = delete(conn, ~p"/api/clients/#{client}")
       assert response(conn, 204)
 
-      assert_error_sent 404, fn ->
-        get(conn, ~p"/api/clients/#{client}")
-      end
+      conn = get(conn, ~p"/api/clients/#{client}")
+      json_response(conn, 404)
+    end
+
+    test "renders errors when invalid id is passed", %{conn: conn, client: _client} do
+      conn = delete(conn, ~p"/api/clients/-1")
+      json_response(conn, 404)
     end
   end
 

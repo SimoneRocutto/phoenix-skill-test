@@ -28,23 +28,33 @@ defmodule ServerWeb.CategoryController do
   end
 
   def show(conn, %{"id" => id}) do
-    category = Products.get_category!(id)
-    render(conn, :show, category: category)
+    case Products.get_category(id) do
+      nil -> {:error, :not_found}
+      category -> render(conn, :show, category: category)
+    end
   end
 
   def update(conn, %{"id" => id, "category" => category_params}) do
-    category = Products.get_category!(id)
+    case Products.get_category(id) do
+      nil ->
+        {:error, :not_found}
 
-    with {:ok, %Category{} = category} <- Products.update_category(category, category_params) do
-      render(conn, :show, category: category)
+      category ->
+        with {:ok, %Category{} = category} <- Products.update_category(category, category_params) do
+          render(conn, :show, category: category)
+        end
     end
   end
 
   def delete(conn, %{"id" => id}) do
-    category = Products.get_category!(id)
+    case Products.get_category(id) do
+      nil ->
+        {:error, :not_found}
 
-    with {:ok, %Category{}} <- Products.delete_category(category) do
-      send_resp(conn, :no_content, "")
+      category ->
+        with {:ok, %Category{}} <- Products.delete_category(category) do
+          send_resp(conn, :no_content, "")
+        end
     end
   end
 end

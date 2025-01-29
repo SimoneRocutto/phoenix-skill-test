@@ -28,23 +28,33 @@ defmodule ServerWeb.ProductController do
   end
 
   def show(conn, %{"id" => id}) do
-    product = Products.get_product!(id)
-    render(conn, :show, product: product)
+    case Products.get_product(id) do
+      nil -> {:error, :not_found}
+      product -> render(conn, :show, product: product)
+    end
   end
 
   def update(conn, %{"id" => id, "product" => product_params}) do
-    product = Products.get_product!(id)
+    case Products.get_product(id) do
+      nil ->
+        {:error, :not_found}
 
-    with {:ok, %Product{} = product} <- Products.update_product(product, product_params) do
-      render(conn, :show, product: product)
+      product ->
+        with {:ok, %Product{} = product} <- Products.update_product(product, product_params) do
+          render(conn, :show, product: product)
+        end
     end
   end
 
   def delete(conn, %{"id" => id}) do
-    product = Products.get_product!(id)
+    case Products.get_product(id) do
+      nil ->
+        {:error, :not_found}
 
-    with {:ok, %Product{}} <- Products.delete_product(product) do
-      send_resp(conn, :no_content, "")
+      product ->
+        with {:ok, %Product{}} <- Products.delete_product(product) do
+          send_resp(conn, :no_content, "")
+        end
     end
   end
 end

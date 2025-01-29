@@ -51,6 +51,8 @@ defmodule Server.Clients do
   """
   def get_client!(id), do: Repo.get!(Client, id)
 
+  def get_client(id), do: Repo.get(Client, id)
+
   @doc """
   Creates a client.
 

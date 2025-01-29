@@ -51,6 +51,8 @@ defmodule Server.Products do
   """
   def get_category!(id), do: Repo.get!(Category, id)
 
+  def get_category(id), do: Repo.get(Category, id)
+
   @doc """
   Creates a category.
 
@@ -161,6 +163,8 @@ defmodule Server.Products do
   """
   def get_product!(id), do: Repo.get!(Product, id)
 
+  def get_product(id), do: Repo.get(Product, id)
+
   @doc """
   Creates a product.
 
@@ -256,6 +260,8 @@ defmodule Server.Products do
 
   """
   def get_sold_product!(id), do: Repo.get!(SoldProduct, id)
+
+  def get_sold_product(id), do: Repo.get(SoldProduct, id)
 
   @doc """
   Creates a sold_product.

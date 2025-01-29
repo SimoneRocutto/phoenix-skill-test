@@ -14,11 +14,11 @@ defmodule ServerWeb.FallbackController do
     |> render(:error, changeset: changeset)
   end
 
-  # This clause is an example of how to handle resources that cannot be found.
+  # Resource not found
   def call(conn, {:error, :not_found}) do
     conn
     |> put_status(:not_found)
-    |> put_view(html: ServerWeb.ErrorHTML, json: ServerWeb.ErrorJSON)
+    |> put_view(json: ServerWeb.ErrorJSON)
     |> render(:"404")
   end
 

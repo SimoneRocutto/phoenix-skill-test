@@ -28,23 +28,33 @@ defmodule ServerWeb.ClientController do
   end
 
   def show(conn, %{"id" => id}) do
-    client = Clients.get_client!(id)
-    render(conn, :show, client: client)
+    case Clients.get_client(id) do
+      nil -> {:error, :not_found}
+      client -> render(conn, :show, client: client)
+    end
   end
 
   def update(conn, %{"id" => id, "client" => client_params}) do
-    client = Clients.get_client!(id)
+    case Clients.get_client(id) do
+      nil ->
+        {:error, :not_found}
 
-    with {:ok, %Client{} = client} <- Clients.update_client(client, client_params) do
-      render(conn, :show, client: client)
+      client ->
+        with {:ok, %Client{} = client} <- Clients.update_client(client, client_params) do
+          render(conn, :show, client: client)
+        end
     end
   end
 
   def delete(conn, %{"id" => id}) do
-    client = Clients.get_client!(id)
+    case Clients.get_client(id) do
+      nil ->
+        {:error, :not_found}
 
-    with {:ok, %Client{}} <- Clients.delete_client(client) do
-      send_resp(conn, :no_content, "")
+      client ->
+        with {:ok, %Client{}} <- Clients.delete_client(client) do
+          send_resp(conn, :no_content, "")
+        end
     end
   end
 end
