@@ -12,7 +12,7 @@ defmodule Server.Users.VerifyErrorHandler do
           {200, Phoenix.json_library().encode_to_iodata!(%{message: type}), "application/json"}
 
         _ ->
-          {402, to_string(type), "text/plain"}
+          {400, to_string(type), "text/plain"}
       end
 
     conn
