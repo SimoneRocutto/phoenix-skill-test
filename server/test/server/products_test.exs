@@ -64,7 +64,6 @@ defmodule Server.ProductsTest do
 
     @invalid_attrs %{name: nil, price: nil}
 
-    @tag :f
     test "list_products/0 returns all products" do
       product = product_fixture(%{}, true)
       assert Products.list_products()[:data] == [product]

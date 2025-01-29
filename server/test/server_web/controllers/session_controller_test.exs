@@ -33,18 +33,15 @@ defmodule ServerWeb.SessionControllerTest do
   end
 
   describe "verify" do
-    @tag :f
     test "recognizes missing token as invalid", %{conn: conn} do
       test_token_validity(conn, nil, true)
     end
 
-    @tag :f
     test "recognizes valid token", %{conn: conn} do
       {:ok, conn: conn} = Server.TestUtils.protected_route_setup(conn)
       test_token_validity(conn)
     end
 
-    @tag :f
     test "recognizes invalid token", %{conn: conn} do
       invalid_token = "helloiamnotvalid"
 
